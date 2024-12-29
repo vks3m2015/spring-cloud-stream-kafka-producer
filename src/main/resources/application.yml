@@ -1,0 +1,50 @@
+server.port: 8078
+
+spring:
+  cloud:
+    stream:
+      default:
+        producer:
+          useNativeEncoding: true
+      kafka:
+        binder:
+          brokers: localhost:9092
+          auto-create-topics: false
+          consumer-properties:
+            key:
+              deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value:
+              deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+          producer-properties:
+            key:
+              serializer: org.apache.kafka.common.serialization.StringSerializer
+            value:
+              serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            enable:
+              idempotence: false
+            retries: 3
+          configuration:
+            spring.json.trusted.packages: '*'
+
+        bindings:
+          publishEvent-out-0:
+            producer:
+              configuration:
+                enable:
+                  idempotence: false
+                retries: 3
+                value.serializer: org.springframework.kafka.support.serializer.JsonSerializer
+                value.converter.latest.compatibility.strict: false
+                spring.json.value.default.type: com.vik.dto.Customer
+                spring.json.trusted.packages: '*'
+                content-type: application/json
+
+
+      bindings:
+        publishEvent-out-0:
+          destination: test4
+          content-type: application/json
+
+    function:
+      definition: publishEvent;
